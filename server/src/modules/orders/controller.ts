@@ -13,3 +13,6 @@ export async function patchStatus(req: Request, res: Response) {
 export async function postPayShare(req: Request, res: Response) {
   res.json(await service.payShare(req.user!.id, req.params.id, Number(req.params.position), req.body.method));
 }
+export async function getOne(req: Request, res: Response) {
+  res.json(await service.getPublicOrder(req.params.id));
+}

@@ -96,3 +96,14 @@ export async function payShare(ownerId: string, orderId: string, position: numbe
   if (allPaid) await supabase().from("orders").update({ status: "producao" }).eq("id", orderId);
   return { allPaid };
 }
+
+export async function getPublicOrder(orderId: string) {
+  const { data, error } = await supabase()
+    .from("orders")
+    .select("id, establishment_id, display_seq, location, customer_name, status, total, fee, fee_pct, note, created_at, order_items(*), order_splits(*)")
+    .eq("id", orderId)
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) throw notFound("Pedido não encontrado");
+  return data;
+}
