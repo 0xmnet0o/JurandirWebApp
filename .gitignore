@@ -18,6 +18,7 @@ pnpm-debug.log*
 
 # Tooling caches
 .impeccable
+.impeccable.zip
 
 # Editor / OS
 .vscode/*
