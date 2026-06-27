@@ -1,10 +1,11 @@
-import { useState } from "react";
-import { Lock, MessageCircle, Printer, Wifi } from "lucide-react";
+import { useState, type Dispatch, type SetStateAction } from "react";
+import { Bell, Lock, MessageCircle, Printer, Wifi } from "lucide-react";
 import { waHref } from "@/lib/format";
 import type { Restaurant } from "@/types";
 
 export interface ConfiguracoesProps {
   restaurant: Restaurant;
+  setRestaurant: Dispatch<SetStateAction<Restaurant>>;
 }
 
 interface FeedbackMsg {
@@ -29,7 +30,12 @@ interface PrinterForm {
 }
 
 /** Configurações do estabelecimento: senha, integração com impressora e suporte. */
-export function Configuracoes({ restaurant }: ConfiguracoesProps) {
+export function Configuracoes({ restaurant, setRestaurant }: ConfiguracoesProps) {
+  const notifyWhatsapp = restaurant.notifyWhatsapp ?? true;
+  const notifyEmail = restaurant.notifyEmail ?? true;
+  const setNotif = (key: "notifyWhatsapp" | "notifyEmail", value: boolean) =>
+    setRestaurant((r) => ({ ...r, [key]: value }));
+
   const [pw, setPw] = useState<PasswordForm>({ cur: "", nova: "", conf: "" });
   const [pwMsg, setPwMsg] = useState<FeedbackMsg | null>(null);
   const [pr, setPr] = useState<PrinterForm>({
@@ -201,6 +207,58 @@ export function Configuracoes({ restaurant }: ConfiguracoesProps) {
             Salvar
           </button>
         </div>
+      </div>
+
+      {/* Notificações */}
+      <div className="bg-white rounded-2xl p-4 shadow-sm">
+        <h2 className="font-semibold text-slate-600 mb-1 flex items-center gap-1.5">
+          <Bell size={16} className="text-cyan-500" /> Notificações
+        </h2>
+        <p className="text-xs text-slate-400 mb-3">
+          Quando ativado, o <b>recibo do pedido</b> e a <b>confirmação de pagamento</b> são enviados
+          ao estabelecimento pelos canais escolhidos.
+        </p>
+
+        <div className="flex items-center justify-between py-2">
+          <div>
+            <p className="text-sm font-medium text-slate-700">Enviar para WhatsApp</p>
+            <p className="text-xs text-slate-400">
+              {restaurant.whatsapp ? `Para ${restaurant.whatsapp}` : "Defina o WhatsApp no Perfil para receber"}
+            </p>
+          </div>
+          <button
+            onClick={() => setNotif("notifyWhatsapp", !notifyWhatsapp)}
+            aria-label="Alternar notificações por WhatsApp"
+            className={`w-11 h-6 rounded-full transition relative shrink-0 ${notifyWhatsapp ? "bg-cyan-500" : "bg-slate-300"}`}
+          >
+            <span
+              className={`absolute top-0.5 w-5 h-5 rounded-full bg-white transition-all ${notifyWhatsapp ? "left-5" : "left-0.5"}`}
+            />
+          </button>
+        </div>
+
+        <div className="flex items-center justify-between py-2 border-t border-slate-100">
+          <div>
+            <p className="text-sm font-medium text-slate-700">Enviar para e-mail</p>
+            <p className="text-xs text-slate-400">
+              {restaurant.email ? `Para ${restaurant.email}` : "Defina o e-mail no Perfil para receber"}
+            </p>
+          </div>
+          <button
+            onClick={() => setNotif("notifyEmail", !notifyEmail)}
+            aria-label="Alternar notificações por e-mail"
+            className={`w-11 h-6 rounded-full transition relative shrink-0 ${notifyEmail ? "bg-cyan-500" : "bg-slate-300"}`}
+          >
+            <span
+              className={`absolute top-0.5 w-5 h-5 rounded-full bg-white transition-all ${notifyEmail ? "left-5" : "left-0.5"}`}
+            />
+          </button>
+        </div>
+
+        <p className="text-[11px] text-slate-400 mt-2">
+          Dispara o recibo dos pedidos e a confirmação dos pagamentos quando ativado. O envio
+          efetivo (e-mail via Resend, WhatsApp via Twilio) é processado pelo servidor.
+        </p>
       </div>
 
       {/* Suporte */}

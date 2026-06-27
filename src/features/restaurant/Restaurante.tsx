@@ -94,7 +94,7 @@ export function Restaurante() {
       {tab === "qrcodes" && <QRCodes restaurant={restaurant} />}
       {tab === "kpis" && <Kpis orders={orders} menu={menu} />}
       {tab === "perfil" && <Perfil restaurant={restaurant} setRestaurant={setRestaurant} />}
-      {tab === "config" && <Configuracoes restaurant={restaurant} />}
+      {tab === "config" && <Configuracoes restaurant={restaurant} setRestaurant={setRestaurant} />}
     </div>
   );
 }

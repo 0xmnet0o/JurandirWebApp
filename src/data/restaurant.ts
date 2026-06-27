@@ -19,4 +19,6 @@ export const INITIAL_RESTAURANT: Restaurant = {
   whatsapp: "5547999990000",
   instagram: "@quiosquedomar",
   emoji: "🏖️",
+  notifyWhatsapp: true,
+  notifyEmail: true,
 };

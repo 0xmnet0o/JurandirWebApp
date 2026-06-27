@@ -128,6 +128,10 @@ export interface Restaurant {
   whatsapp: string;
   instagram: string;
   emoji: string;
+  /** Enviar recibo/confirmação por WhatsApp ao estabelecimento (default: ligado). */
+  notifyWhatsapp?: boolean;
+  /** Enviar recibo/confirmação por e-mail ao estabelecimento (default: ligado). */
+  notifyEmail?: boolean;
 }
 
 // ---------------------------------------------------------------------------
