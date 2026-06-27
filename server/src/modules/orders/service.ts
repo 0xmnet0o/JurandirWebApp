@@ -1,13 +1,13 @@
 import { supabase } from "../../lib/supabase.js";
 import { computeTotals, type LineItem } from "../../domain/money.js";
-import { forbidden, notFound } from "../../lib/http-error.js";
+import { badRequest, forbidden, notFound } from "../../lib/http-error.js";
 import type { OrderRow } from "../../types/db.js";
 
 interface CreateInput {
   location?: string;
   customer_name?: string;
   note?: string;
-  items: LineItem[];
+  items: { menu_item_id: string; qty: number }[];
   splits?: { method: string | null; amount: number; position: number }[];
 }
 
@@ -16,7 +16,22 @@ export async function createPublic(establishmentId: string, input: CreateInput) 
     .from("establishments").select("id, fee_pct, status").eq("id", establishmentId).maybeSingle();
   if (!est || est.status !== "ativo") throw notFound("Estabelecimento indisponível");
 
-  const { total, fee } = computeTotals(input.items, Number(est.fee_pct));
+  // Preço e nome AUTORITATIVOS do banco — nunca confiar em valores enviados pelo
+  // cliente (o endpoint é público/anônimo). Itens são resolvidos por id, escopados
+  // ao estabelecimento; qualquer id inexistente ou de outro estabelecimento é rejeitado.
+  const ids = [...new Set(input.items.map((i) => i.menu_item_id))];
+  const { data: menuRows, error: menuErr } = await supabase()
+    .from("menu_items").select("id, name, price").eq("establishment_id", establishmentId).in("id", ids);
+  if (menuErr) throw menuErr;
+  const byId = new Map((menuRows ?? []).map((m) => [m.id as string, m]));
+  if (byId.size !== ids.length) throw badRequest("Item inexistente ou de outro estabelecimento");
+
+  const lineItems: LineItem[] = input.items.map((i) => {
+    const m = byId.get(i.menu_item_id)!;
+    return { name: m.name as string, qty: i.qty, price: Number(m.price) };
+  });
+
+  const { total, fee } = computeTotals(lineItems, Number(est.fee_pct));
   const { data: seq } = await supabase().rpc("next_display_seq", { p_estab: establishmentId });
   const fullyPaid = !input.splits || input.splits.every((s) => s.method);
 
@@ -37,7 +52,7 @@ export async function createPublic(establishmentId: string, input: CreateInput) 
   if (error) throw error;
 
   await supabase().from("order_items").insert(
-    input.items.map((i) => ({ order_id: order.id, name: i.name, qty: i.qty, price: i.price })),
+    lineItems.map((i) => ({ order_id: order.id, name: i.name, qty: i.qty, price: i.price })),
   );
   if (input.splits?.length) {
     await supabase().from("order_splits").insert(input.splits.map((s) => ({ order_id: order.id, ...s })));

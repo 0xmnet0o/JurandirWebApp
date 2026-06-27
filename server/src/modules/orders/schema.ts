@@ -4,7 +4,7 @@ export const createOrderInput = z.object({
   location: z.string().optional(),
   customer_name: z.string().optional(),
   note: z.string().max(200).optional(),
-  items: z.array(z.object({ name: z.string().min(1), qty: z.number().int().positive(), price: z.number().nonnegative() })).min(1),
+  items: z.array(z.object({ menu_item_id: z.string().uuid(), qty: z.number().int().positive() })).min(1),
   splits: z.array(z.object({ method: z.string().nullable(), amount: z.number().nonnegative(), position: z.number().int() })).optional(),
 });
 export const orderIdParam = z.object({ id: z.string().uuid() });
