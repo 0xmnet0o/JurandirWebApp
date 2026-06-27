@@ -149,7 +149,7 @@ server/
 
 ## 15. Fora de escopo (futuro)
 
-- Integração do frontend React (trocar `localStorage` por API + login Supabase + UI de pagamento).
+- Integração do frontend React (trocar `localStorage` por API + login Supabase + UI de pagamento). **Requisito a preservar:** o app é acessado por smartphone (QR Code) e deve permanecer **responsivo/mobile-first** — o frontend atual já é; qualquer UI nova (ex.: tela de pagamento Asaas) deve seguir o mesmo padrão.
 - KYC completo/upload de documentos no onboarding Asaas (além do mínimo de sandbox).
 - Upload real de imagens (Supabase Storage); import CSV no servidor.
 - Deploy em produção e CI do backend; fila/worker dedicado para notificações (por ora, outbox + retry simples).
