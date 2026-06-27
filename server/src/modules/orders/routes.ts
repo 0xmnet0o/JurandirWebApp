@@ -4,10 +4,11 @@ import { validate } from "../../middleware/validate.js";
 import { ah } from "../../lib/async-handler.js";
 import { idParam } from "../establishments/schema.js";
 import { createOrderInput, orderIdParam, splitPayInput, splitPayParam, updateOrderInput } from "./schema.js";
-import { getMine, patchStatus, postPayShare, postPublic } from "./controller.js";
+import { getMine, getOne, patchStatus, postPayShare, postPublic } from "./controller.js";
 
 export const publicOrderRoutes = Router();
 publicOrderRoutes.post("/establishments/:id/orders", validate({ params: idParam, body: createOrderInput }), ah(postPublic));
+publicOrderRoutes.get("/orders/:id", validate({ params: orderIdParam }), ah(getOne));
 
 export const orderRoutes = Router();
 orderRoutes.get("/orders", requireAuth(), ah(getMine));

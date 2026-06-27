@@ -9,6 +9,7 @@ export default defineConfig({
     globals: true,
     environment: "node",
     setupFiles: ["./tests/setup-env.ts"],
+    globalSetup: ["./tests/teardown.ts"],
     testTimeout: 20000,
     fileParallelism: false,
   },

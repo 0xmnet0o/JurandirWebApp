@@ -77,6 +77,21 @@ describe.skipIf(!hasEnv)("orders (integração)", () => {
     expect(order.status).toBe(400);
   });
 
+  it("GET /orders/:id público retorna o pedido; id inexistente → 404", async () => {
+    const { token, estId } = await setupOwner(app, 0, "g");
+    const itemId = await createMenuItem(app, token, "Água", 5);
+    const order = await request(app)
+      .post(`/api/establishments/${estId}/orders`)
+      .send({ items: [{ menu_item_id: itemId, qty: 1 }] });
+    const got = await request(app).get(`/api/orders/${order.body.id}`);
+    expect(got.status).toBe(200);
+    expect(got.body.id).toBe(order.body.id);
+    expect(Array.isArray(got.body.order_items)).toBe(true);
+
+    const missing = await request(app).get("/api/orders/00000000-0000-0000-0000-000000000000");
+    expect(missing.status).toBe(404);
+  });
+
   it("pedido com split fica aguardando até todas as partes pagarem", async () => {
     const { token, estId } = await setupOwner(app, 0, "s");
     const itemId = await createMenuItem(app, token, "X", 60);
