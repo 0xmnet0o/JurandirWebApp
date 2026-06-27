@@ -11,7 +11,8 @@ import { errorHandler } from "./middleware/error.js";
 
 export function createApp(): Express {
   const app = express();
-  app.use(cors({ origin: parseCorsOrigins(getEnv().CORS_ORIGINS) }));
+  const isProduction = process.env.NODE_ENV === "production";
+  app.use(cors({ origin: parseCorsOrigins(getEnv().CORS_ORIGINS, isProduction) }));
   app.use(express.json({ limit: "5mb" }));
 
   app.get("/health", (_req, res) => res.json({ status: "ok" }));
