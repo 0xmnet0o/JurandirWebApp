@@ -48,12 +48,13 @@ Notas:
 - `display_seq` por estabelecimento substitui o `orderSeq` do protótipo.
 - O **outbox `notifications`** torna o disparo confiável (resposta rápida ao webhook + reprocessamento de falhas).
 
-## 6. RLS (defesa em profundidade)
+## 6. RLS (modelo service-role-only)
 
-- `establishments`: público lê `ativo`; dono lê/edita o seu; admin tudo. Campos Asaas só visíveis ao dono/admin.
-- `menu_items`: público lê de estabelecimento `ativo`; dono gerencia os seus; admin tudo.
-- `orders`/`order_items`/`order_splits`: público **insere** (pedido anônimo) escopado ao estabelecimento; dono lê/atualiza os seus; admin tudo.
-- `charges`/`notifications`: sem acesso público; manipuladas pelo backend (service role); dono/admin leem as suas.
+Como **todo** acesso a dados passa pelo backend (service role, que ignora RLS) e o frontend **não** fala direto com o Supabase, o modelo seguro é: **RLS habilitada em todas as tabelas, sem policies para `anon`/`authenticated`** (Postgres nega tudo a esses papéis por padrão) + `revoke all ... from anon, authenticated`.
+
+Motivo: RLS é por linha, não por coluna — um `select` "público" vazaria a linha inteira, incluindo PII/identificadores financeiros (`cpf_cnpj`, `asaas_account_id`, `asaas_wallet_id`, `owner_id`, e-mail, telefone); e `insert` público permitiria pedidos forjados (integridade financeira / cross-tenant). O isolamento por dono/role é garantido **no código** do backend.
+
+> Futuro (se o frontend for falar direto com o Supabase): criar policies escopadas por `auth.uid()` **e** uma **view pública** só com colunas seguras (sem `cpf_cnpj`/`asaas_*`), revogando `select` direto nas tabelas base.
 
 ## 7. Integrações (portas & adaptadores)
 

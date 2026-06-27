@@ -105,6 +105,23 @@ language sql as $$
 $$;
 
 -- ===== RLS =====
+-- Modelo de acesso (Opção A): TODO acesso a dados passa pelo backend Express
+-- usando a SERVICE ROLE, que ignora RLS. O frontend NÃO fala direto com o
+-- Supabase. Portanto habilitamos RLS em todas as tabelas e NÃO criamos policies
+-- para os papéis `anon`/`authenticated` — o padrão do Postgres com RLS ligada e
+-- sem policy é NEGAR tudo para esses papéis (a service role continua passando).
+--
+-- Isso evita:
+--   * exposição de PII/identificadores financeiros (cpf_cnpj, asaas_account_id,
+--     asaas_wallet_id, owner_id, e-mail, telefone) — RLS é por linha, não por
+--     coluna, então um `select` público vazaria a linha inteira;
+--   * inserção pública arbitrária de pedidos (total/fee/estabelecimento forjados)
+--     e adulteração cross-tenant.
+--
+-- Se no futuro o frontend precisar falar DIRETO com o Supabase, criar policies
+-- escopadas por `auth.uid()` E uma VIEW pública contendo apenas colunas seguras
+-- (sem cpf_cnpj/asaas_*), além de revogar `select` direto na tabela base.
+
 alter table public.profiles enable row level security;
 alter table public.establishments enable row level security;
 alter table public.menu_items enable row level security;
@@ -112,35 +129,7 @@ alter table public.orders enable row level security;
 alter table public.order_items enable row level security;
 alter table public.order_splits enable row level security;
 
-create policy profiles_self on public.profiles for select using (auth.uid() = id);
-
-create policy estab_public_read on public.establishments for select using (status = 'ativo');
-create policy estab_owner_all on public.establishments for all
-  using (auth.uid() = owner_id) with check (auth.uid() = owner_id);
-
-create policy menu_public_read on public.menu_items for select using (
-  exists (select 1 from public.establishments e where e.id = establishment_id and e.status = 'ativo')
-);
-create policy menu_owner_all on public.menu_items for all using (
-  exists (select 1 from public.establishments e where e.id = establishment_id and e.owner_id = auth.uid())
-) with check (
-  exists (select 1 from public.establishments e where e.id = establishment_id and e.owner_id = auth.uid())
-);
-
-create policy orders_public_insert on public.orders for insert with check (true);
-create policy orders_owner_rw on public.orders for select using (
-  exists (select 1 from public.establishments e where e.id = establishment_id and e.owner_id = auth.uid())
-);
-create policy orders_owner_update on public.orders for update using (
-  exists (select 1 from public.establishments e where e.id = establishment_id and e.owner_id = auth.uid())
-);
-create policy order_items_public_insert on public.order_items for insert with check (true);
-create policy order_items_owner_read on public.order_items for select using (
-  exists (select 1 from public.orders o join public.establishments e on e.id = o.establishment_id
-          where o.id = order_id and e.owner_id = auth.uid())
-);
-create policy order_splits_public_insert on public.order_splits for insert with check (true);
-create policy order_splits_owner_rw on public.order_splits for all using (
-  exists (select 1 from public.orders o join public.establishments e on e.id = o.establishment_id
-          where o.id = order_id and e.owner_id = auth.uid())
-) with check (true);
+-- Defesa extra: garantir que os papéis de cliente não tenham privilégios de tabela
+-- (mesmo sem policy, RLS já negaria; revogar torna a intenção explícita).
+revoke all on public.profiles, public.establishments, public.menu_items,
+  public.orders, public.order_items, public.order_splits from anon, authenticated;
