@@ -66,10 +66,24 @@ const blankLead = (): LeadForm => ({
   message: "",
 });
 
-// Atmosfera do hero: brilho de pôr do sol sobre o azul do oceano.
+// Atmosfera do hero: brilho de pôr do sol sobre o azul do oceano (usado no rodapé).
 const heroBg: CSSProperties = {
   backgroundImage:
     "radial-gradient(120% 90% at 78% -10%, #FFC24B 0%, #FF8A5B 22%, #EF5130 40%, rgba(239,81,48,0) 68%), linear-gradient(180deg, #0C6A70 0%, #0A3437 100%)",
+};
+
+// Foto do hero: quiosque na praia, guarda-sóis, pessoas e o mar ao fundo (Pexels, uso livre).
+const HERO_IMG =
+  "https://images.pexels.com/photos/12783841/pexels-photo-12783841.jpeg?auto=compress&cs=tinysrgb&w=1600";
+const heroImage: CSSProperties = {
+  backgroundImage: `url("${HERO_IMG}")`,
+  backgroundSize: "cover",
+  backgroundPosition: "center",
+};
+// Overlay sobre a foto: escurece à esquerda (texto legível) e esquenta à direita.
+const heroOverlay: CSSProperties = {
+  background:
+    "linear-gradient(105deg, rgba(10,52,55,0.94) 0%, rgba(10,52,55,0.68) 40%, rgba(12,67,71,0.34) 68%, rgba(239,81,48,0.22) 100%)",
 };
 
 /** Site institucional (pedeai.com.br): hero, como funciona, finder e captação de leads. */
@@ -113,9 +127,11 @@ export function Landing({ onEnter, onForEstablishment }: LandingProps) {
   return (
     <div className="font-body bg-sand-100 text-ink">
       {/* ===== HERO ===== */}
-      <header className="grain relative overflow-hidden text-white" style={heroBg}>
+      <header className="grain relative overflow-hidden text-white" style={heroImage}>
+        {/* overlay de legibilidade sobre a foto */}
+        <div className="pointer-events-none absolute inset-0" style={heroOverlay} />
         {/* sol decorativo */}
-        <div className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-sun-400/30 blur-3xl" />
+        <div className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-sun-400/25 blur-3xl" />
         <div className="relative mx-auto max-w-6xl px-6 pb-20 pt-16 sm:pb-28 sm:pt-24">
           <div className="grid items-center gap-12 lg:grid-cols-[1.15fr_0.85fr]">
             {/* coluna texto */}
