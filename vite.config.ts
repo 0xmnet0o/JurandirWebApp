@@ -4,7 +4,10 @@ import react from "@vitejs/plugin-react";
 import { fileURLToPath, URL } from "node:url";
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ command }) => ({
+  // Em produção o app é servido em https://<user>.github.io/JurandirWebApp/.
+  // No dev (`command === "serve"`) mantemos a raiz.
+  base: command === "build" ? "/JurandirWebApp/" : "/",
   plugins: [react()],
   resolve: {
     alias: {
@@ -21,4 +24,4 @@ export default defineConfig({
       include: ["src/lib/**", "src/components/**"],
     },
   },
-});
+}));
