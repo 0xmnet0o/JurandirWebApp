@@ -24,6 +24,9 @@ Outros scripts:
 npm run build        # type-check (tsc) + build de produção (dist/)
 npm run preview      # serve o build de produção localmente
 npm run typecheck    # apenas a verificação de tipos
+npm run test         # roda os testes (Vitest)
+npm run test:watch   # testes em modo watch
+npm run coverage     # testes com relatório de cobertura
 npm run lint         # ESLint
 npm run lint:fix     # ESLint corrigindo o que for automático
 npm run format       # Prettier formatando os arquivos
@@ -35,6 +38,22 @@ npm run format:check # Prettier apenas verificando (CI)
 - **ESLint 9** (flat config) com `typescript-eslint`, `react-hooks` e `react-refresh`.
 - **Prettier** integrado (`eslint-config-prettier` evita conflitos de estilo).
 - Configuração em `eslint.config.js` e `.prettierrc.json`; `legacy/` é ignorado.
+
+## Testes
+
+- **Vitest** + **Testing Library** (ambiente `jsdom`), configurados em `vite.config.ts`
+  com setup em `src/test/setup.ts`.
+- Cobrem a lógica pura (`format`, `analytics`, `csv`, `storage`) e um teste de
+  componente (`Img`). Os testes ficam ao lado do código em arquivos `*.test.ts(x)`.
+
+## Persistência
+
+O estado (cardápio, pedidos, perfil e estabelecimentos) é salvo no **localStorage**
+do navegador (`src/lib/storage.ts`, chave versionada `pedeai:state:v1`) — então
+recarregar a página **mantém** as alterações. Como o ícone de cada pagamento é um
+componente React (não serializável), ele é descartado no `JSON.stringify` e
+reidratado pelo `id` ao carregar; as datas (`Order.ts`) também são revividas.
+Para voltar aos dados-semente, basta limpar essa chave (`clearPersisted()`).
 
 ## Arquitetura
 
@@ -75,7 +94,7 @@ src/
 
 ## Observações
 
-- É uma **demonstração**: dados em memória (sem backend/persistência). Recarregar
-  a página reinicia o estado a partir dos dados-semente.
+- É uma **demonstração**: não há backend. O estado é mantido no navegador via
+  localStorage (ver _Persistência_), partindo dos dados-semente no primeiro acesso.
 - Os QR Codes usam a API pública `api.qrserver.com` apenas para a prévia.
 - O código original está preservado em `legacy/` para referência.

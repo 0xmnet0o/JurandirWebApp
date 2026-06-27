@@ -1,18 +1,31 @@
-import { useCallback, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { INITIAL_MENU } from "@/data/menu";
 import { INITIAL_RESTAURANT } from "@/data/restaurant";
 import { seedEstablishments, seedOrders } from "@/data/seeds";
+import { loadPersisted, savePersisted } from "@/lib/storage";
 import type { Establishment, MenuItem, NewOrder, Order, Restaurant } from "@/types";
 import { AppStoreContext, type AppStore } from "./context";
 
 export function AppStoreProvider({ children }: { children: ReactNode }) {
-  const [menu, setMenu] = useState<MenuItem[]>(INITIAL_MENU);
-  const [orders, setOrders] = useState<Order[]>(seedOrders);
-  const [orderSeq, setOrderSeq] = useState(12);
-  const [restaurant, setRestaurant] = useState<Restaurant>(INITIAL_RESTAURANT);
-  const [establishments, setEstablishments] = useState<Establishment[]>(() =>
-    seedEstablishments(seedOrders(), INITIAL_RESTAURANT.platformFee),
+  // Carrega o estado salvo (uma única vez) e usa como valor inicial; cai nos
+  // dados-semente quando não há nada persistido.
+  const [persisted] = useState(loadPersisted);
+
+  const [menu, setMenu] = useState<MenuItem[]>(() => persisted?.menu ?? INITIAL_MENU);
+  const [orders, setOrders] = useState<Order[]>(() => persisted?.orders ?? seedOrders());
+  const [orderSeq, setOrderSeq] = useState(() => persisted?.orderSeq ?? 12);
+  const [restaurant, setRestaurant] = useState<Restaurant>(
+    () => persisted?.restaurant ?? INITIAL_RESTAURANT,
   );
+  const [establishments, setEstablishments] = useState<Establishment[]>(
+    () =>
+      persisted?.establishments ?? seedEstablishments(seedOrders(), INITIAL_RESTAURANT.platformFee),
+  );
+
+  // Persiste qualquer mudança no estado global.
+  useEffect(() => {
+    savePersisted({ menu, orders, restaurant, establishments, orderSeq });
+  }, [menu, orders, restaurant, establishments, orderSeq]);
 
   const addOrder = useCallback(
     (order: NewOrder): number => {
