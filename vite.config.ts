@@ -19,6 +19,10 @@ export default defineConfig(({ command }) => ({
     environment: "jsdom",
     setupFiles: ["./src/test/setup.ts"],
     css: false,
+    // Apenas os testes do frontend. O backend (server/) tem seu próprio
+    // vitest e roda de forma independente — não deve ser descoberto aqui.
+    include: ["src/**/*.test.{ts,tsx}"],
+    exclude: ["**/node_modules/**", "**/dist/**", "server/**"],
     coverage: {
       provider: "v8",
       include: ["src/lib/**", "src/components/**"],
