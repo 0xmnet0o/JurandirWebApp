@@ -3,6 +3,8 @@ import cors from "cors";
 import { authRoutes } from "./modules/auth/routes.js";
 import { establishmentRoutes, meEstablishmentRoutes } from "./modules/establishments/routes.js";
 import { menuRoutes, publicMenuRoutes } from "./modules/menu/routes.js";
+import { orderRoutes, publicOrderRoutes } from "./modules/orders/routes.js";
+import { adminRoutes } from "./modules/admin/routes.js";
 import { errorHandler } from "./middleware/error.js";
 
 export function createApp(): Express {
@@ -17,6 +19,9 @@ export function createApp(): Express {
   app.use("/api", meEstablishmentRoutes);
   app.use("/api", publicMenuRoutes);
   app.use("/api", menuRoutes);
+  app.use("/api", publicOrderRoutes);
+  app.use("/api", orderRoutes);
+  app.use("/api", adminRoutes);
 
   app.use(errorHandler);
   return app;
