@@ -26,6 +26,7 @@ export function PrintModal({ order, restaurantName, onClose }: PrintModalProps) 
           <div className="text-center font-bold uppercase">{restaurantName}</div>
           <div className="text-center text-slate-400 mb-2">--- VIA COZINHA ---</div>
           <div>Pedido: #{String(order.id).padStart(3, "0")}</div>
+          <div>Codigo: {order.code}</div>
           <div>Local: {order.location}</div>
           {order.customerName && <div>Cliente: {order.customerName}</div>}
           <div>{order.ts.toLocaleString("pt-BR")}</div>

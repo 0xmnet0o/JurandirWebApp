@@ -1,6 +1,7 @@
 import { Users } from "lucide-react";
 import { pay } from "@/data/payments";
 import { computeLive } from "@/lib/analytics";
+import { generateOrderCode } from "@/lib/orderCode";
 import type { Establishment, Order, Payment } from "@/types";
 
 /** Gera os pedidos de demonstração (datas relativas ao momento de execução). */
@@ -14,7 +15,7 @@ export function seedOrders(): Order[] {
     color: "bg-pink-500",
   };
 
-  return [
+  const orders: Omit<Order, "code">[] = [
     {
       id: 11,
       location: "Guarda-sol nº 08",
@@ -166,6 +167,7 @@ export function seedOrders(): Order[] {
       total: 157,
     },
   ];
+  return orders.map((o) => ({ ...o, code: generateOrderCode() }));
 }
 
 /**

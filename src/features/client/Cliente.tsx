@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useStore } from "@/store/context";
+import { generateOrderCode } from "@/lib/orderCode";
 import type { MenuItem, Order, Payment, Split } from "@/types";
 import type { ClientStart } from "@/App";
 import type { CartLine, ClientStep } from "./types";
@@ -54,6 +55,7 @@ export function Cliente({ start }: ClienteProps) {
     const fullyPaid = !splits || splits.every((s) => s.method);
     const order: Order = {
       id: 0, // substituído por addOrder
+      code: generateOrderCode(),
       ts: new Date(),
       items: cart.map((i) => ({ name: i.name, qty: i.qty, price: i.price })),
       total,

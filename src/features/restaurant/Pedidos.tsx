@@ -46,7 +46,10 @@ export function Pedidos({ orders, setOrders, restaurant }: PedidosProps) {
         className={`bg-white rounded-2xl p-4 shadow-sm ${incomplete ? "ring-1 ring-rose-200" : ""}`}
       >
         <div className="flex items-center justify-between mb-2">
-          <span className="font-bold text-slate-800">Pedido #{String(o.id).padStart(3, "0")}</span>
+          <span className="font-bold text-slate-800">
+            Pedido #{String(o.id).padStart(3, "0")}
+            <span className="ml-2 font-mono text-xs font-medium text-slate-400">{o.code}</span>
+          </span>
           <span className={`text-xs px-2 py-1 rounded-full font-medium ${badge.cls}`}>
             {badge.label}
           </span>
