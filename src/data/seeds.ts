@@ -2,6 +2,7 @@ import { Users } from "lucide-react";
 import { pay } from "@/data/payments";
 import { computeLive } from "@/lib/analytics";
 import { generateOrderCode } from "@/lib/orderCode";
+import { generateDemoCard, isCardMethod } from "@/lib/card";
 import type { Establishment, Order, Payment } from "@/types";
 
 /** Gera os pedidos de demonstração (datas relativas ao momento de execução). */
@@ -167,7 +168,11 @@ export function seedOrders(): Order[] {
       total: 157,
     },
   ];
-  return orders.map((o) => ({ ...o, code: generateOrderCode() }));
+  return orders.map((o) => ({
+    ...o,
+    code: generateOrderCode(),
+    card: isCardMethod(o.payment.id) ? generateDemoCard() : undefined,
+  }));
 }
 
 /**

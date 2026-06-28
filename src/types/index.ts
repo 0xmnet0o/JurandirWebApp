@@ -91,10 +91,18 @@ export interface Split {
   amount: number;
 }
 
+/** Cartão mascarado (somente bandeira + 4 últimos — nunca o número completo/PAN). */
+export interface CardInfo {
+  brand: string;
+  last4: string;
+}
+
 export interface Order {
   id: number;
   /** Código curto e único do pedido (ex.: "PED-7F3A9C2D"). */
   code: string;
+  /** Cartão mascarado, presente apenas em pagamentos no cartão (crédito/débito). */
+  card?: CardInfo;
   location: string;
   customerName?: string;
   status: OrderStatus;
