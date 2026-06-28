@@ -1,6 +1,16 @@
 import { useState, type Dispatch, type SetStateAction } from "react";
-import { Check, Clock, LayoutDashboard, MapPin, MessageSquare, Printer, User } from "lucide-react";
+import {
+  Check,
+  Clock,
+  CreditCard,
+  LayoutDashboard,
+  MapPin,
+  MessageSquare,
+  Printer,
+  User,
+} from "lucide-react";
 import { money } from "@/lib/format";
+import { formatCard } from "@/lib/card";
 import { splitInfo } from "@/lib/analytics";
 import type { Order, OrderStatus, Restaurant } from "@/types";
 import { PrintModal } from "./PrintModal";
@@ -122,6 +132,11 @@ export function Pedidos({ orders, setOrders, restaurant }: PedidosProps) {
             <span className="text-xs text-slate-400 ml-2">
               {incomplete ? `recebido · ${o.payment.label}` : `via ${o.payment.label}`}
             </span>
+            {o.card && (
+              <div className="mt-1 flex items-center gap-1 text-xs text-slate-500">
+                <CreditCard size={12} className="text-slate-400" /> {formatCard(o.card)}
+              </div>
+            )}
           </div>
           {!incomplete && (
             <div className="flex gap-2">

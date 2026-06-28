@@ -11,6 +11,7 @@ import {
   Percent,
   Phone,
   Plus,
+  ScrollText,
   Shield,
   Store,
   Trash2,
@@ -26,8 +27,9 @@ import { MEDAL } from "@/data/categories";
 import type { Establishment, EstablishmentForm, PaymentMethodId, PaymentTotals } from "@/types";
 import { AdminLogin } from "./AdminLogin";
 import { EstablishmentEditor } from "./EstablishmentEditor";
+import { Backlog } from "./Backlog";
 
-type AdminTab = "dashboard" | "faturamento" | "cadastros" | "taxas";
+type AdminTab = "dashboard" | "faturamento" | "cadastros" | "taxas" | "backlog";
 type PeriodId = (typeof ADMIN_PERIODS)[number]["id"];
 
 const TABS: { id: AdminTab; label: string; icon: LucideIcon }[] = [
@@ -35,6 +37,7 @@ const TABS: { id: AdminTab; label: string; icon: LucideIcon }[] = [
   { id: "faturamento", label: "Faturamento", icon: TrendingUp },
   { id: "cadastros", label: "Cadastros", icon: Store },
   { id: "taxas", label: "Taxas", icon: Percent },
+  { id: "backlog", label: "Backlog", icon: ScrollText },
 ];
 
 const PAY_META: Record<PaymentMethodId, { label: string; color: string }> = {
@@ -632,6 +635,8 @@ export function Admin() {
           </div>
         </>
       )}
+
+      {tab === "backlog" && <Backlog orders={orders} restaurant={restaurant} />}
 
       {reg && <EstablishmentEditor initial={reg} onSave={saveEst} onClose={() => setReg(null)} />}
 

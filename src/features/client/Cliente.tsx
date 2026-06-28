@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useStore } from "@/store/context";
 import { generateOrderCode } from "@/lib/orderCode";
+import { generateDemoCard, isCardMethod } from "@/lib/card";
 import type { MenuItem, Order, Payment, Split } from "@/types";
 import type { ClientStart } from "@/App";
 import type { CartLine, ClientStep } from "./types";
@@ -56,6 +57,7 @@ export function Cliente({ start }: ClienteProps) {
     const order: Order = {
       id: 0, // substituído por addOrder
       code: generateOrderCode(),
+      card: isCardMethod(payment.id) ? generateDemoCard() : undefined,
       ts: new Date(),
       items: cart.map((i) => ({ name: i.name, qty: i.qty, price: i.price })),
       total,
