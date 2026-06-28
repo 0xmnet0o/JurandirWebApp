@@ -71,6 +71,7 @@ export function MyOrders({ myOrders, restaurant, payShare, onBack }: MyOrdersPro
                 <div className="flex items-center justify-between mb-1">
                   <span className="font-bold text-slate-800">
                     Pedido #{String(o.id).padStart(3, "0")}
+                    <span className="ml-2 font-mono text-xs font-medium text-slate-400">{o.code}</span>
                   </span>
                   <span className={`text-xs px-2 py-1 rounded-full font-medium ${si.cls}`}>
                     {si.label}

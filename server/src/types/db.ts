@@ -41,6 +41,7 @@ export interface MenuItemRow {
 
 export interface OrderRow {
   id: string;
+  code: string;
   establishment_id: string;
   display_seq: number;
   location: string;

@@ -44,6 +44,7 @@ describe.skipIf(!hasEnv)("orders (integração)", () => {
     expect(Number(order.body.total)).toBe(44); // preço vem do banco (22 × 2)
     expect(Number(order.body.fee)).toBe(4.4); // 10%
     expect(order.body.status).toBe("producao");
+    expect(order.body.code).toMatch(/^PED-[0-9A-Z]{8}$/); // código curto único
 
     const list = await request(app).get("/api/orders").set("Authorization", `Bearer ${token}`);
     expect(list.status).toBe(200);

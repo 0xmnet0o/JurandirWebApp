@@ -1,5 +1,6 @@
 import { supabase } from "../../lib/supabase.js";
 import { computeTotals, type LineItem } from "../../domain/money.js";
+import { generateOrderCode } from "../../domain/orderCode.js";
 import { badRequest, forbidden, notFound } from "../../lib/http-error.js";
 import type { OrderRow } from "../../types/db.js";
 
@@ -40,6 +41,7 @@ export async function createPublic(establishmentId: string, input: CreateInput) 
     .insert({
       establishment_id: establishmentId,
       display_seq: seq as number,
+      code: generateOrderCode(),
       location: input.location ?? "",
       customer_name: input.customer_name ?? null,
       note: input.note ?? null,
@@ -103,7 +105,7 @@ export async function getPublicOrder(orderId: string) {
   // para o cliente acompanhar o pedido.
   const { data, error } = await supabase()
     .from("orders")
-    .select("id, establishment_id, display_seq, location, status, total, fee, fee_pct, created_at, order_items(*), order_splits(*)")
+    .select("id, code, establishment_id, display_seq, location, status, total, fee, fee_pct, created_at, order_items(*), order_splits(*)")
     .eq("id", orderId)
     .maybeSingle();
   if (error) throw error;

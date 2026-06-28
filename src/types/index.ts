@@ -93,6 +93,8 @@ export interface Split {
 
 export interface Order {
   id: number;
+  /** Código curto e único do pedido (ex.: "PED-7F3A9C2D"). */
+  code: string;
   location: string;
   customerName?: string;
   status: OrderStatus;

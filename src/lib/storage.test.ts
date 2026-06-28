@@ -19,6 +19,7 @@ const sampleState = (): Omit<PersistedState, "version"> => ({
   orders: [
     {
       id: 1,
+      code: "PED-TEST0001",
       location: "Mesa 1",
       status: "producao",
       ts: new Date("2026-01-15T12:00:00Z"),

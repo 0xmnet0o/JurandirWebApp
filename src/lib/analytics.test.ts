@@ -5,6 +5,7 @@ import type { Order } from "@/types";
 
 const baseOrder = (over: Partial<Order>): Order => ({
   id: 1,
+  code: "PED-TEST0001",
   location: "Mesa 1",
   status: "producao",
   ts: new Date(),

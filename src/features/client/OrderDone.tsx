@@ -36,6 +36,10 @@ export function OrderDone({ order, onNew, onMyOrders }: OrderDoneProps) {
       </p>
 
       <div className="bg-white rounded-2xl p-5 shadow-sm mt-6 text-left">
+        <div className="mb-3 flex items-center justify-between rounded-xl bg-slate-50 px-3 py-2">
+          <span className="text-xs text-slate-400">Código do pedido</span>
+          <span className="font-mono text-sm font-bold tracking-wider text-slate-700">{order.code}</span>
+        </div>
         <div className="flex justify-between flex-wrap gap-y-1 text-sm text-slate-400 mb-3">
           <span className="flex items-center gap-1">
             <MapPin size={13} /> {order.location}
